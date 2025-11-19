@@ -75,6 +75,61 @@ try {
   console.error('Validation failed:', err.message);
 }
 
+Swimming example (transformer)
+--------------------------------
+
+The package includes a small transformer to convert swimming standard JSON into a `Standard[]` array that `computePerformance` understands. Below is an example that mirrors the unit tests in `test/swimTransformer.test.ts`.
+
+```javascript
+import transformSwimmingStandards from './src/transformers/swimTransformer';
+import { computePerformance } from 'next-cut';
+
+// Example JSON mapping (string cuts)
+const swimJson = {
+  AAAA: '57.09',
+  AAA: '59.79',
+  AA: '1:02.49',
+  A: '1:05.19',
+  BB: '1:10.59',
+  B: '1:16.09'
+};
+
+// Provide the levels order from lowest -> highest
+const levelsOrder = ['B', 'BB', 'A', 'AA', 'AAA', 'AAAA'];
+
+// Transform into standards (keeps cuts as strings so the default parser will convert them)
+const standards = transformSwimmingStandards(swimJson, levelsOrder);
+
+// Now compute performance for a few sample metrics (strings or numbers)
+const samples = ['1:16.09', '1:10.59', '59.79', '57.09', 9999];
+for (const s of samples) {
+  const r = computePerformance(s as any, standards, { direction: 'lower', levels: levelsOrder });
+  console.log(`metric=${s} -> label=${r.label}`);
+  console.log('  diffToNext (numeric):', r.diffToNext); // { absolute: number, relative: number }
+  console.log('  diffToNextFormatted (string):', r.diffToNextFormatted); // { absolute: string, relative: string }
+}
+
+// Sample output (actual run):
+
+/*
+metric=1:16.09 -> label=B
+  diffToNext (numeric): { absolute: 5.5, relative: 7.79147187986967 }
+  diffToNextFormatted (string): { absolute: '05.50', relative: '7.8%' }
+metric=1:10.59 -> label=BB
+  diffToNext (numeric): { absolute: 5.400000000000006, relative: 8.283479061205716 }
+  diffToNextFormatted (string): { absolute: '05.40', relative: '8.3%' }
+metric=59.79 -> label=AAA
+  diffToNext (numeric): { absolute: 2.6999999999999957, relative: 4.729374671571196 }
+  diffToNextFormatted (string): { absolute: '02.70', relative: '4.7%' }
+metric=57.09 -> label=AAAA
+  diffToNext (numeric): null
+  diffToNextFormatted (string): null
+metric=9999 -> label=unknown
+  diffToNext (numeric): null
+  diffToNextFormatted (string): null
+*/
+
+// The transformer + computePerformance combination is covered by unit tests in `test/swimTransformer.test.ts`.
 ```
 
 Standards use a single `cut` numeric field. Interpretation depends on the

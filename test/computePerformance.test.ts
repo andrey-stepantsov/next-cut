@@ -96,7 +96,7 @@ describe('computePerformance - range (lower better)', () => {
     expect(res.diffToNext).toBeDefined();
     // absolute diff = 150 - 60 = 90
     expect(res.diffToNext?.absolute).toBeCloseTo(90);
-    expect(res.diffToNextFormatted?.absolute).toBe('00:01:30.00');
+    expect(res.diffToNextFormatted?.absolute).toBe('1:30.00');
     // relative = (90 / 60) * 100 = 150.0%
     expect(res.diffToNextFormatted?.relative).toBe('150.0%');
   });
@@ -110,7 +110,7 @@ describe('computePerformance - range (lower better)', () => {
     expect(res.diffToNext).toBeDefined();
     // absolute diff = 75.5 - 60 = 15.5
     expect(res.diffToNext?.absolute).toBeCloseTo(15.5);
-    expect(res.diffToNextFormatted?.absolute).toBe('00:00:15.50');
+    expect(res.diffToNextFormatted?.absolute).toBe('15.50');
     // relative = (15.5 / 60) * 100 = 25.833... -> formatted 25.8%
     expect(res.diffToNextFormatted?.relative).toBe('25.8%');
   });
@@ -142,5 +142,35 @@ describe('computePerformance - range (lower better)', () => {
     ];
     const levels = ['B', 'A'];
     expect(() => computePerformance(7, bad, { direction: 'higher', levels, validationMode: 'throw' })).toThrow();
+  });
+});
+
+describe('exact cut matching', () => {
+  test('higher direction: metric exactly equals cut should match that level', () => {
+    const standards = [
+      { label: 'Low', cut: '50' },
+      { label: 'Mid', cut: '75' },
+      { label: 'High', cut: '100' }
+    ];
+    // direction higher: cut is minimum threshold (metric >= cut)
+    const r1 = computePerformance(75, standards, { direction: 'higher' });
+    expect(r1.label).toBe('Mid');
+
+    const r2 = computePerformance('100', standards, { direction: 'higher' });
+    expect(r2.label).toBe('High');
+  });
+
+  test('lower direction: metric exactly equals cut should match that level', () => {
+    const standards = [
+      { label: 'Fast', cut: '30' },
+      { label: 'Moderate', cut: '60' },
+      { label: 'Slow', cut: '120' }
+    ];
+    // direction lower: cut is maximum threshold (metric <= cut)
+    const r1 = computePerformance('60.00', standards, { direction: 'lower' });
+    expect(r1.label).toBe('Moderate');
+
+    const r2 = computePerformance(30, standards, { direction: 'lower' });
+    expect(r2.label).toBe('Fast');
   });
 });

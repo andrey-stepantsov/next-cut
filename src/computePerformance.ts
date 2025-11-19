@@ -49,7 +49,15 @@ function defaultFormatAbsolute(value: number): string {
   const minutes = Math.floor((v % 3600) / 60);
   const seconds = Math.floor(v % 60);
   const hundredths = Math.round((v - Math.floor(v)) * 100);
-  return `${sign}${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}.${pad2(hundredths)}`;
+  // Minimal formatting: omit hours/minutes when not needed.
+  // Always include seconds and two-digit fractional hundredths.
+  if (hours > 0) {
+    return `${sign}${hours}:${pad2(minutes)}:${pad2(seconds)}.${pad2(hundredths)}`;
+  }
+  if (minutes > 0) {
+    return `${sign}${minutes}:${pad2(seconds)}.${pad2(hundredths)}`;
+  }
+  return `${sign}${pad2(seconds)}.${pad2(hundredths)}`;
 }
 
 // Default relative formatter: percent with 1 decimal digit and trailing %
