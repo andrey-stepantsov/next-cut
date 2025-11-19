@@ -117,45 +117,59 @@ for (const s of samples) {
 metric=1:20.00 -> label=unknown
   diffToNext (numeric): { absolute: 3.9099999999999966, relative: 5.138651596793267 }
   diffToNextFormatted (string): { absolute: '03.91', relative: '5.1%' }
+  nextCut: { name: 'B', cut: '1:16.09' }
 metric=1:17.00 -> label=unknown
   diffToNext (numeric): { absolute: 0.9099999999999966, relative: 1.195952161913519 }
   diffToNextFormatted (string): { absolute: '00.91', relative: '1.2%' }
+  nextCut: { name: 'B', cut: '1:16.09' }
 metric=1:16.09 -> label=B
   diffToNext (numeric): { absolute: 5.5, relative: 7.79147187986967 }
   diffToNextFormatted (string): { absolute: '05.50', relative: '7.8%' }
+  nextCut: { name: 'BB', cut: '1:10.59' }
 metric=1:13.00 -> label=B
   diffToNext (numeric): { absolute: 2.4099999999999966, relative: 3.4140813146337963 }
   diffToNextFormatted (string): { absolute: '02.41', relative: '3.4%' }
+  nextCut: { name: 'BB', cut: '1:10.59' }
 metric=1:10.59 -> label=BB
   diffToNext (numeric): { absolute: 5.400000000000006, relative: 8.283479061205716 }
   diffToNextFormatted (string): { absolute: '05.40', relative: '8.3%' }
+  nextCut: { name: 'A', cut: '1:05.19' }
 metric=1:08.00 -> label=BB
   diffToNext (numeric): { absolute: 2.8100000000000023, relative: 4.310477067034825 }
   diffToNextFormatted (string): { absolute: '02.81', relative: '4.3%' }
+  nextCut: { name: 'A', cut: '1:05.19' }
 metric=1:05.19 -> label=A
   diffToNext (numeric): { absolute: 2.6999999999999957, relative: 4.320691310609691 }
   diffToNextFormatted (string): { absolute: '02.70', relative: '4.3%' }
+  nextCut: { name: 'AA', cut: '1:02.49' }
 metric=1:03.50 -> label=A
   diffToNext (numeric): { absolute: 1.009999999999998, relative: 1.6162586013762168 }
   diffToNextFormatted (string): { absolute: '01.01', relative: '1.6%' }
+  nextCut: { name: 'AA', cut: '1:02.49' }
 metric=1:02.49 -> label=AA
   diffToNext (numeric): { absolute: 2.700000000000003, relative: 4.515805318615158 }
   diffToNextFormatted (string): { absolute: '02.70', relative: '4.5%' }
+  nextCut: { name: 'AAA', cut: '59.79' }
 metric=1:01.00 -> label=AA
   diffToNext (numeric): { absolute: 1.2100000000000009, relative: 2.0237497909349407 }
   diffToNextFormatted (string): { absolute: '01.21', relative: '2.0%' }
+  nextCut: { name: 'AAA', cut: '59.79' }
 metric=59.79 -> label=AAA
   diffToNext (numeric): { absolute: 2.6999999999999957, relative: 4.729374671571196 }
   diffToNextFormatted (string): { absolute: '02.70', relative: '4.7%' }
+  nextCut: { name: 'AAAA', cut: '57.09' }
 metric=58.50 -> label=AAA
   diffToNext (numeric): { absolute: 1.4099999999999966, relative: 2.4697845507094 }
   diffToNextFormatted (string): { absolute: '01.41', relative: '2.5%' }
+  nextCut: { name: 'AAAA', cut: '57.09' }
 metric=57.09 -> label=AAAA
   diffToNext (numeric): null
   diffToNextFormatted (string): null
+  nextCut: null
 metric=56 -> label=AAAA
   diffToNext (numeric): null
   diffToNextFormatted (string): null
+  nextCut: null
 */
 
 // The transformer + computePerformance combination is covered by unit tests in `test/swimTransformer.test.ts`.
