@@ -212,7 +212,57 @@ export function computePerformance(
   }
 
   if (matches.length === 0) {
-    return { label: 'unknown', index: -1, nextStandard: null, diffToNext: null, diffToNextFormatted: null, validation: { valid: errors.length === 0, errors } };
+    // No matching standard (e.g., metric slower than all cuts for 'lower').
+    // Instead of returning nulls, provide the nearest "next" standard so
+    // callers can see how far they are from the next achievable level.
+    let nextBest: Standard | null = null;
+    if (Number.isFinite(metricNum)) {
+      if (direction === 'higher') {
+        // next is the smallest cut greater than metric
+        const candidates = numericStandards
+          .filter((e) => Number.isFinite(e.cutNum) && e.cutNum > metricNum)
+          .sort((a, b) => a.cutNum - b.cutNum);
+        if (candidates.length > 0) nextBest = candidates[0].std;
+      } else {
+        // direction === 'lower': next is the largest cut smaller than metric
+        const candidates = numericStandards
+          .filter((e) => Number.isFinite(e.cutNum) && e.cutNum < metricNum)
+          .sort((a, b) => b.cutNum - a.cutNum);
+        if (candidates.length > 0) nextBest = candidates[0].std;
+      }
+    }
+
+    let diff: { absolute: number; relative: number } | null = null;
+    let formatted: { absolute: string; relative: string } | null = null;
+    if (nextBest && Number.isFinite(metricNum)) {
+      const nextEntry = numericStandards.find((e) => e.std === nextBest);
+      const nextCutNum = nextEntry ? nextEntry.cutNum : NaN;
+      if (Number.isFinite(nextCutNum)) {
+        if (direction === 'higher') {
+          const abs = Math.max(0, nextCutNum - metricNum);
+          const denom = Math.abs(nextCutNum) > 0 ? Math.abs(nextCutNum) : 1;
+          const rel = (abs / denom) * 100;
+          diff = { absolute: abs, relative: rel };
+        } else {
+          const abs = Math.max(0, metricNum - nextCutNum);
+          const denom = Math.abs(nextCutNum) > 0 ? Math.abs(nextCutNum) : 1;
+          const rel = (abs / denom) * 100;
+          diff = { absolute: abs, relative: rel };
+        }
+        formatted = { absolute: formatAbsolute(diff.absolute), relative: formatRelative(diff.relative) };
+      } else {
+        errors.push('Unable to parse cut value for next standard');
+      }
+    }
+
+    return {
+      label: 'unknown',
+      index: -1,
+      nextStandard: nextBest,
+      diffToNext: diff,
+      diffToNextFormatted: formatted,
+      validation: { valid: errors.length === 0, errors }
+    };
   }
 
   // Select best match

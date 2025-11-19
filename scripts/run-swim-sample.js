@@ -20,7 +20,10 @@ const swimJson = {
 const levelsOrder = ['B', 'BB', 'A', 'AA', 'AAA', 'AAAA'];
 const standards = transformSwimmingStandards(swimJson, levelsOrder);
 
-const samples = ['1:16.09', '1:10.59', '59.79', '57.09', 9999];
+// Use a comprehensive set of samples including:
+//  - below B (slower than the worst cut), and
+//  - above AAAA (faster than the best cut)
+const samples = ['1:20.00', '1:16.09', '1:10.59', '1:05.19', '1:02.49', '59.79', '57.09', 56];
 for (const s of samples) {
   const r = computePerformance(s, standards, { direction: 'lower', levels: levelsOrder });
   console.log(`metric=${s} -> label=${r.label}`);

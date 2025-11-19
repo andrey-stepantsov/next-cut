@@ -100,8 +100,10 @@ const levelsOrder = ['B', 'BB', 'A', 'AA', 'AAA', 'AAAA'];
 // Transform into standards (keeps cuts as strings so the default parser will convert them)
 const standards = transformSwimmingStandards(swimJson, levelsOrder);
 
-// Now compute performance for a few sample metrics (strings or numbers)
-const samples = ['1:16.09', '1:10.59', '59.79', '57.09', 9999];
+// Now compute performance for a few sample metrics (strings or numbers). The
+// list below includes a metric slower than `B` (no standard matches) and a
+// metric faster than `AAAA` (best level).
+const samples = ['1:20.00', '1:16.09', '1:10.59', '1:05.19', '1:02.49', '59.79', '57.09', 56];
 for (const s of samples) {
   const r = computePerformance(s as any, standards, { direction: 'lower', levels: levelsOrder });
   console.log(`metric=${s} -> label=${r.label}`);
@@ -112,19 +114,28 @@ for (const s of samples) {
 // Sample output (actual run):
 
 /*
+metric=1:20.00 -> label=unknown
+  diffToNext (numeric): { absolute: 3.9099999999999966, relative: 5.138651596793267 }
+  diffToNextFormatted (string): { absolute: '03.91', relative: '5.1%' }
 metric=1:16.09 -> label=B
   diffToNext (numeric): { absolute: 5.5, relative: 7.79147187986967 }
   diffToNextFormatted (string): { absolute: '05.50', relative: '7.8%' }
 metric=1:10.59 -> label=BB
   diffToNext (numeric): { absolute: 5.400000000000006, relative: 8.283479061205716 }
   diffToNextFormatted (string): { absolute: '05.40', relative: '8.3%' }
+metric=1:05.19 -> label=A
+  diffToNext (numeric): { absolute: 2.6999999999999957, relative: 4.320691310609691 }
+  diffToNextFormatted (string): { absolute: '02.70', relative: '4.3%' }
+metric=1:02.49 -> label=AA
+  diffToNext (numeric): { absolute: 2.700000000000003, relative: 4.515805318615158 }
+  diffToNextFormatted (string): { absolute: '02.70', relative: '4.5%' }
 metric=59.79 -> label=AAA
   diffToNext (numeric): { absolute: 2.6999999999999957, relative: 4.729374671571196 }
   diffToNextFormatted (string): { absolute: '02.70', relative: '4.7%' }
 metric=57.09 -> label=AAAA
   diffToNext (numeric): null
   diffToNextFormatted (string): null
-metric=9999 -> label=unknown
+metric=56 -> label=AAAA
   diffToNext (numeric): null
   diffToNextFormatted (string): null
 */

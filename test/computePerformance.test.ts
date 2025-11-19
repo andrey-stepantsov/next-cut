@@ -53,8 +53,11 @@ describe('computePerformance - threshold (higher better)', () => {
     const res = computePerformance(-1000, [{ label: 'Positive', cut: 0 }], { direction: 'higher' });
     expect(res.index).toBe(-1);
     expect(res.label).toBe('unknown');
-    expect(res.nextStandard).toBeNull();
-    expect(res.diffToNext).toBeNull();
+    expect(res.nextStandard).toBeDefined();
+    expect(res.nextStandard?.label).toBe('Positive');
+    expect(res.diffToNext).toBeDefined();
+    // next cut 0, metric -1000 -> abs diff 1000
+    expect(res.diffToNext?.absolute).toBeCloseTo(1000);
   });
 });
 
