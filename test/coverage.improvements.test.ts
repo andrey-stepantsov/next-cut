@@ -10,7 +10,7 @@ describe('coverage improvements', () => {
 
     // metric 1:01:30 => 3690s; next better is Moderate cut=60 => diff=3630 => 1:00:30.00
     const res = computePerformance('1:01:30', timeStandards);
-    expect(res.label).toBe('Slow');
+    expect(res.currentStandard?.label).toBe('Slow');
     expect(res.diffToNextFormatted?.absolute).toBe('1:00:30.00');
   });
 
@@ -23,7 +23,7 @@ describe('coverage improvements', () => {
     // metric 15 should fall into Low only if higher is used (metric >= cut)
     const res = computePerformance(15, standards, { direction: 'auto', levels });
     // With increasing cuts, auto should infer 'higher' and pick 'Low' as metric >= 10
-    expect(res.label).toBe('Low');
+    expect(res.currentStandard?.label).toBe('Low');
     expect(res.validation?.valid).toBe(true);
   });
 
@@ -37,7 +37,7 @@ describe('coverage improvements', () => {
     expect(res.validation).toBeDefined();
     // cuts are decreasing, auto should infer 'lower' and validation should be valid
     expect(res.validation?.valid).toBe(true);
-    expect(res.label).toBe('A');
+    expect(res.currentStandard?.label).toBe('A');
   });
 
   test('reports parse error for metric strings', () => {

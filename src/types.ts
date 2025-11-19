@@ -15,10 +15,9 @@ export type Standard = {
 };
 
 export type PerformanceResult = {
-  label: string;
   index: number; // index into the standards array, -1 if none matched
   /** The currently achieved standard (the one that matched) */
-  standard?: Standard;
+  currentStandard?: Standard | null;
   /** The next (better) standard to aim for, or null if already best/none */
   nextStandard?: Standard | null;
   /** Convenience object showing the next cut's label and original cut representation */

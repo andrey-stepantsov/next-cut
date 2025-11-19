@@ -32,7 +32,7 @@ describe('computePerformance - threshold (higher better)', () => {
   test('returns Good for 82', () => {
     // thresholds are min-based (higher is better), override default direction
     const res = computePerformance(82, thresholds, { direction: 'higher' });
-    expect(res.label).toBe('Good');
+    expect(res.currentStandard?.label).toBe('Good');
     expect(res.index).toBe(1);
     expect(res.nextStandard).toBeDefined();
     expect(res.nextStandard?.label).toBe('Excellent');
@@ -43,7 +43,7 @@ describe('computePerformance - threshold (higher better)', () => {
 
   test('returns Excellent for 95', () => {
     const res = computePerformance(95, thresholds, { direction: 'higher' });
-    expect(res.label).toBe('Excellent');
+    expect(res.currentStandard?.label).toBe('Excellent');
     expect(res.index).toBe(0);
     expect(res.nextStandard).toBeNull();
     expect(res.diffToNext).toBeNull();
@@ -52,7 +52,7 @@ describe('computePerformance - threshold (higher better)', () => {
   test('returns unknown when no standards match', () => {
     const res = computePerformance(-1000, [{ label: 'Positive', cut: 0 }], { direction: 'higher' });
     expect(res.index).toBe(-1);
-    expect(res.label).toBe('unknown');
+    expect(res.currentStandard).toBeNull();
     expect(res.nextStandard).toBeDefined();
     expect(res.nextStandard?.label).toBe('Positive');
     expect(res.diffToNext).toBeDefined();
@@ -72,7 +72,7 @@ describe('computePerformance - range (lower better)', () => {
   test('returns Moderate for 45', () => {
     // timeStandards are max-based (lower is better) — default is lower
     const res = computePerformance(45, timeStandards);
-    expect(res.label).toBe('Moderate');
+    expect(res.currentStandard?.label).toBe('Moderate');
     expect(res.nextStandard).toBeDefined();
     expect(res.nextStandard?.label).toBe('Fast');
     expect(res.diffToNext).toBeDefined();
@@ -82,7 +82,7 @@ describe('computePerformance - range (lower better)', () => {
 
   test('returns Slow for 120', () => {
     const res = computePerformance(120, timeStandards);
-    expect(res.label).toBe('Slow');
+    expect(res.currentStandard?.label).toBe('Slow');
     expect(res.nextStandard).toBeDefined();
     expect(res.nextStandard?.label).toBe('Moderate');
     expect(res.diffToNext).toBeDefined();
@@ -93,7 +93,7 @@ describe('computePerformance - range (lower better)', () => {
   test('parses mm:ss.dd metric strings correctly', () => {
     const res = computePerformance('2:30.00', timeStandards);
     // 2:30.00 -> 150s, should be Slow (cut Infinity)
-    expect(res.label).toBe('Slow');
+    expect(res.currentStandard?.label).toBe('Slow');
     expect(res.nextStandard).toBeDefined();
     expect(res.nextStandard?.label).toBe('Moderate');
     expect(res.diffToNext).toBeDefined();
@@ -107,7 +107,7 @@ describe('computePerformance - range (lower better)', () => {
   test('parses seconds-only metric strings correctly', () => {
     const res = computePerformance('75.5', timeStandards);
     // 75.5s should fall into Slow (cut Infinity)
-    expect(res.label).toBe('Slow');
+    expect(res.currentStandard?.label).toBe('Slow');
     expect(res.nextStandard).toBeDefined();
     expect(res.nextStandard?.label).toBe('Moderate');
     expect(res.diffToNext).toBeDefined();
@@ -133,7 +133,7 @@ describe('computePerformance - range (lower better)', () => {
     const formatRelative = (p: number) => `${p.toFixed(1)} pct`;
 
     const res = computePerformance('75', standards, { parser, formatAbsolute, formatRelative, direction: 'higher' });
-    expect(res.label).toBe('Low');
+    expect(res.currentStandard?.label).toBe('Low');
     expect(res.diffToNextFormatted?.absolute).toBeDefined();
     expect(res.diffToNextFormatted?.relative).toMatch(/pct$/);
   });
@@ -157,10 +157,10 @@ describe('exact cut matching', () => {
     ];
     // direction higher: cut is minimum threshold (metric >= cut)
     const r1 = computePerformance(75, standards, { direction: 'higher' });
-    expect(r1.label).toBe('Mid');
+    expect(r1.currentStandard?.label).toBe('Mid');
 
     const r2 = computePerformance('100', standards, { direction: 'higher' });
-    expect(r2.label).toBe('High');
+    expect(r2.currentStandard?.label).toBe('High');
   });
 
   test('lower direction: metric exactly equals cut should match that level', () => {
@@ -171,9 +171,9 @@ describe('exact cut matching', () => {
     ];
     // direction lower: cut is maximum threshold (metric <= cut)
     const r1 = computePerformance('60.00', standards, { direction: 'lower' });
-    expect(r1.label).toBe('Moderate');
+    expect(r1.currentStandard?.label).toBe('Moderate');
 
     const r2 = computePerformance(30, standards, { direction: 'lower' });
-    expect(r2.label).toBe('Fast');
+    expect(r2.currentStandard?.label).toBe('Fast');
   });
 });

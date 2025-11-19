@@ -124,7 +124,7 @@ const standards = transformSwimmingStandards(swimJson, levelsOrder);
 const samples = ['1:20.00', '1:16.09', '1:10.59', '1:05.19', '1:02.49', '59.79', '57.09', 56];
 for (const s of samples) {
   const r = computePerformance(s as any, standards, { direction: 'lower', levels: levelsOrder });
-  console.log(`metric=${s} -> label=${r.label}`);
+  console.log(`metric=${s} -> label=${r.currentStandard?.label}`);
   console.log('  diffToNext (numeric):', r.diffToNext); // { absolute: number, relative: number }
   console.log('  diffToNextFormatted (string):', r.diffToNextFormatted); // { absolute: string, relative: string }
 }

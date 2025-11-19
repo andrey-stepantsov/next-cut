@@ -24,7 +24,8 @@ describe('transformSwimmingStandards', () => {
       const m = metrics[i];
       const exp = expected[i];
       const res = computePerformance(m as any, standards, { direction: 'lower', levels: levelsOrder });
-      expect(res.label).toBe(exp);
+      if (exp === 'unknown') expect(res.currentStandard).toBeNull();
+      else expect(res.currentStandard?.label).toBe(exp);
     }
   });
 });

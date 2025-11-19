@@ -82,8 +82,8 @@ export function computePerformance(
   if (!Array.isArray(standards) || standards.length === 0) {
     errors.push('`standards` must be a non-empty array');
     return {
-      label: 'unknown',
       index: -1,
+      currentStandard: null,
       nextStandard: null,
       diffToNext: null,
       diffToNextFormatted: null,
@@ -270,8 +270,8 @@ export function computePerformance(
     }
 
     return {
-      label: 'unknown',
       index: -1,
+      currentStandard: null,
       nextStandard: nextBest,
       diffToNext: diff,
       diffToNextFormatted: formatted,
@@ -328,9 +328,8 @@ export function computePerformance(
   }
 
   return {
-    label: bestMatch.std.label,
     index: bestMatch.idx,
-    standard: bestMatch.std,
+    currentStandard: bestMatch.std,
     nextStandard: next,
     diffToNext: diff,
     diffToNextFormatted: formatted,
