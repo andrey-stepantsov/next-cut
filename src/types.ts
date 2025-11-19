@@ -47,13 +47,16 @@ export type PerformanceOptions = {
   levels?: string[];
   /**
    * Optional input parser: converts a `number|string` into a numeric value used
-   * internally for comparisons. Default parser interprets time strings of the
-   * form `hh:mm:ss.dd` into seconds.
+    * internally for comparisons. Default parser interprets time strings in
+    * common forms (e.g. `hh:mm:ss(.fff)`, `mm:ss(.fff)`, or seconds-only)
+    * and returns seconds as a number.
    */
   parser?: (input: number | string) => number;
   /**
    * Optional absolute formatter: converts an absolute numeric difference into
-   * a string. Default formats time in `hh:mm:ss.dd`.
+    * a string. Default formats time in a compact style: omits hours/minutes
+    * when not needed and always shows seconds with two decimal places
+    * (e.g. `1:30.00`, `03.91`, `15.50`).
    */
   formatAbsolute?: (value: number) => string;
   /**
