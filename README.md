@@ -15,11 +15,12 @@ const standards = [
   { label: 'Poor', cut: 0 }
 ];
 
-console.log(computePerformance(82, standards, { direction: 'higher' }));
-// -> { label: 'Good', index: 1, standard: { label: 'Good', cut: 75 } }
+const res = computePerformance(82, standards, { direction: 'higher' });
+console.log(res.currentStandard?.label); // 'Good'
+// full result shape: { index: 1, currentStandard: { label: 'Good', cut: 75 }, nextStandard: { label: 'Excellent', cut: 90 }, diffToNext: { absolute: 8, relative: 8.888... }, ... }
 
 // With the enhanced result you also get the `nextStandard` and `diffToNext`:
-// -> { label: 'Good', index: 1, standard: { ... }, nextStandard: { label: 'Excellent', cut: 90 }, diffToNext: { absolute: 8, relative: 8.888... } }
+// -> { index: 1, currentStandard: { ... }, nextStandard: { label: 'Excellent', cut: 90 }, diffToNext: { absolute: 8, relative: 8.888... } }
 
 // By default the comparator assumes smaller values are better (`lower`).
 // For min-based thresholds (where higher is better) pass the `direction`
@@ -40,9 +41,8 @@ console.log(computePerformance(82, standards, { direction: 'higher' }));
 
 - **`Standard`**: `{ label: string; cut: number | string; id?: string; description?: string }` — a single threshold. `cut` is interpreted according to the `direction` option (see below).
 - **`PerformanceResult`**: returned object with keys:
-  - **`label`**: current level label (or `'unknown'` if none matched).
+  - **`currentStandard`**: the matching `Standard` when found, or `null` when none matched (use `currentStandard?.label` to get the label).
   - **`index`**: index in the `standards` array, or `-1` when no match.
-  - **`standard`**: the matching `Standard` (when found).
   - **`nextStandard`**: the next better `Standard` to aim for, or `null`.
   - **`diffToNext`**: `{ absolute: number; relative: number } | null` (numeric diffs in seconds and percent).
   - **`diffToNextFormatted`**: `{ absolute: string; relative: string } | null` (formatted strings using `formatAbsolute` / `formatRelative`).
@@ -71,12 +71,12 @@ const timeStandards = [
 
 // Use mm:ss.dd input (default parser understands it)
 const r1 = computePerformance('2:30.00', timeStandards);
-console.log(r1.label); // 'Slow'
+console.log(r1.currentStandard?.label); // 'Slow'
 console.log(r1.diffToNextFormatted); // { absolute: '1:30.00', relative: '150.0%' }
 
 // Seconds-only string
 const r2 = computePerformance('75.5', timeStandards);
-console.log(r2.label); // 'Slow'
+console.log(r2.currentStandard?.label); // 'Slow'
 console.log(r2.diffToNextFormatted?.absolute); // '15.50'
 
 // Custom parser and formatters
@@ -124,7 +124,7 @@ const standards = transformSwimmingStandards(swimJson, levelsOrder);
 const samples = ['1:20.00', '1:16.09', '1:10.59', '1:05.19', '1:02.49', '59.79', '57.09', 56];
 for (const s of samples) {
   const r = computePerformance(s as any, standards, { direction: 'lower', levels: levelsOrder });
-  console.log(`metric=${s} -> label=${r.currentStandard?.label}`);
+  console.log(`metric=${s} -> label=${r.currentStandard?.label ?? 'unknown'}`);
   console.log('  diffToNext (numeric):', r.diffToNext); // { absolute: number, relative: number }
   console.log('  diffToNextFormatted (string):', r.diffToNextFormatted); // { absolute: string, relative: string }
 }
