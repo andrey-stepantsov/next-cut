@@ -22,7 +22,7 @@ export type PerformanceResult = {
   /** The next (better) standard to aim for, or null if already best/none */
   nextStandard?: Standard | null;
   /** Convenience object showing the next cut's label and original cut representation */
-  nextCut?: { name: string; cut: string } | null;
+  nextCut?: { label: string; cut: string } | null;
   /** Difference to `nextStandard` in absolute units and relative percent */
   diffToNext?: { absolute: number; relative: number } | null;
   /** Validation information: non-throwing errors/warnings about schema */
