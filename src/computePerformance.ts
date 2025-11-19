@@ -270,14 +270,13 @@ export function computePerformance(
     }
 
     return {
-        label: 'unknown',
-        index: -1,
-        nextStandard: nextBest,
-        nextCut: buildNextCutObject(nextBest),
-        diffToNext: diff,
-        diffToNextFormatted: formatted,
-        validation: { valid: errors.length === 0, errors }
-      };
+      label: 'unknown',
+      index: -1,
+      nextStandard: nextBest,
+      diffToNext: diff,
+      diffToNextFormatted: formatted,
+      validation: { valid: errors.length === 0, errors }
+    };
   }
 
   // Select best match
@@ -328,22 +327,11 @@ export function computePerformance(
     throw new Error('Validation errors: ' + errors.join('; '));
   }
 
-  // Build nextCut convenience object (preserve original representation if possible)
-  function buildNextCutObject(s: Standard | null): { label: string; cut: string } | null {
-    if (!s) return null;
-    const cutRaw = s.cut;
-    // Find parsed numeric value for formatting when cut is a number
-    const parsed = typeof cutRaw === 'number' ? cutRaw : parser(cutRaw as any);
-    const cutStr = typeof cutRaw === 'string' ? String(cutRaw) : (Number.isFinite(parsed) ? formatAbsolute(parsed) : String(cutRaw));
-    return { label: s.label, cut: cutStr };
-  }
-
   return {
     label: bestMatch.std.label,
     index: bestMatch.idx,
     standard: bestMatch.std,
     nextStandard: next,
-    nextCut: buildNextCutObject(next),
     diffToNext: diff,
     diffToNextFormatted: formatted,
     validation: { valid: errors.length === 0, errors }

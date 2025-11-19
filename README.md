@@ -44,7 +44,6 @@ console.log(computePerformance(82, standards, { direction: 'higher' }));
   - **`index`**: index in the `standards` array, or `-1` when no match.
   - **`standard`**: the matching `Standard` (when found).
   - **`nextStandard`**: the next better `Standard` to aim for, or `null`.
-  - **`nextCut`**: convenience `{ label: string; cut: string } | null` preserving the original cut string when available.
   - **`diffToNext`**: `{ absolute: number; relative: number } | null` (numeric diffs in seconds and percent).
   - **`diffToNextFormatted`**: `{ absolute: string; relative: string } | null` (formatted strings using `formatAbsolute` / `formatRelative`).
   - **`validation`**: `{ valid: boolean; errors: string[] }` with non-throwing validation messages (unless `validationMode: 'throw'`).
