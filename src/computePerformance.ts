@@ -95,6 +95,17 @@ export function computePerformance(
   const formatAbsolute = options?.formatAbsolute ?? defaultFormatAbsolute;
   const formatRelative = options?.formatRelative ?? defaultFormatRelative;
 
+  // Safe parser wrapper: convert parser exceptions or non-finite results into NaN
+  function safeParse(input: number | string): number {
+    try {
+      const n = typeof input === 'number' ? input : parser(input as any);
+      return Number.isFinite(n) ? n : NaN;
+    } catch (err) {
+      errors.push(`Parser error for input '${String(input)}': ${err instanceof Error ? err.message : String(err)}`);
+      return NaN;
+    }
+  }
+
   // Determine direction
   let direction: 'higher' | 'lower' = 'lower';
   if (options?.direction === 'higher') direction = 'higher';
@@ -111,7 +122,7 @@ export function computePerformance(
           canInfer = false;
           break;
         }
-          const parsed = typeof s.cut === 'number' ? s.cut : parser(s.cut as any);
+          const parsed = typeof s.cut === 'number' ? s.cut : safeParse(s.cut as any);
           if (Number.isNaN(parsed)) {
             canInfer = false;
             break;
@@ -164,8 +175,8 @@ export function computePerformance(
         const lowStd = labelToStd.get(lowLabel);
         const highStd = labelToStd.get(highLabel);
         if (!lowStd || !highStd) continue;
-        const lowCut = typeof lowStd.cut === 'number' ? lowStd.cut : parser(lowStd.cut as any);
-        const highCut = typeof highStd.cut === 'number' ? highStd.cut : parser(highStd.cut as any);
+        const lowCut = typeof lowStd.cut === 'number' ? lowStd.cut : safeParse(lowStd.cut as any);
+        const highCut = typeof highStd.cut === 'number' ? highStd.cut : safeParse(highStd.cut as any);
         if (Number.isNaN(lowCut) || Number.isNaN(highCut)) {
           errors.push(`Unable to parse cuts for levels '${lowLabel}' or '${highLabel}'`);
           continue;
@@ -183,20 +194,18 @@ export function computePerformance(
     }
   }
 
-  // If validationMode is 'throw' and we have errors, throw now.
-  if (options?.validationMode === 'throw' && errors.length > 0) {
-    throw new Error('Validation errors: ' + errors.join('; '));
-  }
+  // NOTE: defer throwing until after parsing steps so that parsing-related
+  // errors (which may be discovered below) are included in the thrown error.
 
   // Parse metric and standards into numeric values
-  const metricNum = typeof metric === 'number' ? metric : parser(metric as any);
+  const metricNum = typeof metric === 'number' ? metric : safeParse(metric as any);
   if (Number.isNaN(metricNum)) errors.push('Unable to parse metric into a numeric value');
 
   const numericStandards: Array<{ idx: number; std: Standard; cutNum: number }> = [];
   for (let i = 0; i < standards.length; i++) {
     const s = standards[i];
     const cutRaw = s.cut;
-    const cutNum = typeof cutRaw === 'number' ? cutRaw : parser(cutRaw as any);
+    const cutNum = typeof cutRaw === 'number' ? cutRaw : safeParse(cutRaw as any);
     if (Number.isNaN(cutNum)) {
       errors.push(`Unable to parse cut value for standard '${s.label}'`);
     }
@@ -255,7 +264,12 @@ export function computePerformance(
       }
     }
 
-      return {
+    // If validationMode is 'throw' and we have errors, throw now.
+    if (options?.validationMode === 'throw' && errors.length > 0) {
+      throw new Error('Validation errors: ' + errors.join('; '));
+    }
+
+    return {
         label: 'unknown',
         index: -1,
         nextStandard: nextBest,
@@ -308,6 +322,11 @@ export function computePerformance(
   }
 
   const formatted = diff ? { absolute: formatAbsolute(diff.absolute), relative: formatRelative(diff.relative) } : null;
+
+  // If validationMode is 'throw' and we have errors, throw now (include parsing errors).
+  if (options?.validationMode === 'throw' && errors.length > 0) {
+    throw new Error('Validation errors: ' + errors.join('; '));
+  }
 
   // Build nextCut convenience object (preserve original representation if possible)
   function buildNextCutObject(s: Standard | null): { label: string; cut: string } | null {
